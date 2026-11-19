@@ -1,0 +1,16 @@
+<section id="vendedores" hidden aria-labelledby="vendedores-title">
+  <header class="section-header">
+    <h1 id="vendedores-title" tabindex="-1">Vendedores</h1>
+    <button class="primary" id="new-seller" type="button" hidden>Novo vendedor</button>
+  </header>
+  <div class="panel">
+    <p id="sellers-status" class="table-status" role="status"></p>
+    <button id="sellers-retry" class="retry" type="button" hidden>Tentar novamente</button>
+    <div class="table-scroll" role="region" aria-label="Tabela de vendedores" tabindex="0">
+      <table>
+        <thead><tr><th scope="col">Identificador</th><th scope="col">Nome</th><th scope="col">Ações</th></tr></thead>
+        <tbody id="seller-rows"></tbody>
+      </table>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,17 @@
+<section id="login" hidden aria-labelledby="login-title">
+  <header class="section-header">
+    <div class="brand">{% include 'distribuidora/brand.html' %}</div>
+    <h1 id="login-title" tabindex="-1">Entrar</h1>
+  </header>
+  <form id="login-form" class="panel login-form" method="post">
+    <label for="username">Usuário
+      <input id="username" name="username" autocomplete="username" required>
+    </label>
+    <label for="password">Senha
+      <input id="password" name="password" type="password" autocomplete="current-password" required>
+    </label>
+    <p id="login-error" class="notice error" role="alert" hidden></p>
+    <button class="primary" type="submit">Entrar</button>
+    <a class="button" data-nav="clientes" href="{% url 'frontend:clientes' %}">Continuar como visitante</a>
+  </form>
+</section>
