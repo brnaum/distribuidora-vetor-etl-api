@@ -1,11 +1,10 @@
 import pandas as pd
-import re
-import unicodedata
 import requests
 import time
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from distribuidora.models import Cliente, Vendedor, Auditoria, CepCache
+from distribuidora.normalizadores import normalizar_cep
 
 class Command(BaseCommand):
     help = 'Executa o pipeline de ETL a partir do CSV e carrega no banco de dados'
@@ -26,10 +25,10 @@ class Command(BaseCommand):
         # Funções de normalização (as mesmas do Jupyter)
         def limpar_cep(valor):
             if pd.isna(valor): return pd.NA, 'Já era Nulo'
-            numeros = re.sub(r'\D', '', str(valor))
-            if len(numeros) == 0 or len(numeros) > 8 or numeros.zfill(8) == '00000000': 
+            cep = normalizar_cep(str(valor))
+            if cep is None:
                 return pd.NA, 'Inválido'
-            return numeros.zfill(8), 'Válido'
+            return cep, 'Válido'
 
         # Limpeza inicial de CEP para a API
         df[['cep_limpo', 'auditoria_cep']] = df['cep'].apply(lambda x: pd.Series(limpar_cep(x)))

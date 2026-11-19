@@ -3,6 +3,7 @@ import re
 
 from rest_framework import serializers
 from .models import Cliente, Vendedor, Auditoria
+from .normalizadores import normalizar_cep
 
 class ClientePublicoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -43,9 +44,10 @@ class ClienteSerializer(ClientePublicoSerializer):
     def validate_cep(self, value):
         if value in (None, ''):
             return value
-        if not re.fullmatch(r'[0-9]{5}-?[0-9]{3}', value):
-            raise serializers.ValidationError('Informe um CEP com oito dígitos.')
-        return value.replace('-', '')
+        cep = normalizar_cep(value) if re.fullmatch(r'[0-9]{5}-?[0-9]{3}', value) else None
+        if cep is None:
+            raise serializers.ValidationError('Informe um CEP válido com oito dígitos.')
+        return cep
 
     def validate_telefone(self, value):
         if value in (None, ''):
@@ -53,6 +55,11 @@ class ClienteSerializer(ClientePublicoSerializer):
         if not re.fullmatch(r'(?:\+?55 ?)?(?:\([1-9][0-9]\)|[1-9][0-9]) ?[0-9]{4,5}-?[0-9]{4}', value):
             raise serializers.ValidationError('Informe um telefone brasileiro com DDD.')
         return re.sub(r'[^0-9]', '', value)
+
+
+class ResumoBairroSerializer(serializers.Serializer):
+    bairro = serializers.CharField(allow_null=True)
+    total = serializers.IntegerField(min_value=0)
 
 
 class VendedorSerializer(serializers.ModelSerializer):

@@ -543,3 +543,62 @@ class ContratoAPITests(APITestCase):
         self.assertIsNotNone(primeira.data['next'])
         self.assertEqual([item['id_cliente'] for item in segunda.data['results']], ['EXTRA19'])
         self.assertIsNone(segunda.data['next'])
+
+
+class ConsultasFase3Tests(APITestCase):
+    def setUp(self):
+        self.vendedor = Vendedor.objects.create(nome='Vendedor de teste')
+        outro = Vendedor.objects.create(nome='Outro vendedor')
+        for codigo, bairro, revisar, vendedor in (
+            ('F31', 'Águas Claras', True, self.vendedor),
+            ('F32', 'aguas-claras', False, self.vendedor),
+            ('F33', None, True, outro),
+        ):
+            Cliente.objects.create(
+                id_cliente=codigo, razao_social=codigo, cidade='Brasília', uf='DF',
+                bairro=bairro, precisa_revisao=revisar, vendedor_responsavel=vendedor,
+                email='contato@example.test',
+            )
+
+    def test_busca_bairro_normaliza_grafia_e_filtra_revisao(self):
+        url = reverse('cliente-buscar-por-bairro', kwargs={'nome': '  AGUAS.  CLARAS  '})
+        resposta = self.client.get(url, {'precisa_revisao': 'true'})
+        self.assertEqual(resposta.status_code, status.HTTP_200_OK)
+        self.assertEqual(resposta.data['count'], 1)
+        self.assertEqual(resposta.data['results'][0]['id_cliente'], 'F31')
+        self.assertNotIn('email', resposta.data['results'][0])
+
+    def test_resumo_agrupa_grafias_e_conta_clientes_sem_bairro(self):
+        resposta = self.client.get(reverse('cliente-listar-bairros'))
+        self.assertEqual(resposta.status_code, status.HTTP_200_OK)
+        self.assertEqual(resposta.data, [
+            {'bairro': 'aguas-claras', 'total': 2},
+            {'bairro': None, 'total': 1},
+        ])
+
+    def test_rota_de_clientes_por_vendedor_e_paginada(self):
+        url = reverse('cliente-buscar-por-vendedor', args=[self.vendedor.pk])
+        resposta = self.client.get(url, {'precisa_revisao': 'false'})
+        self.assertEqual(resposta.status_code, status.HTTP_200_OK)
+        self.assertEqual(resposta.data['count'], 1)
+        self.assertEqual(resposta.data['results'][0]['id_cliente'], 'F32')
+        self.assertNotIn('email', resposta.data['results'][0])
+        inexistente = reverse('cliente-buscar-por-vendedor', args=[999999])
+        self.assertEqual(self.client.get(inexistente).status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_listagem_valida_o_filtro_de_revisao(self):
+        url = reverse('cliente-list')
+        resposta = self.client.get(url, {'precisa_revisao': 'true'})
+        self.assertEqual(resposta.status_code, status.HTTP_200_OK)
+        self.assertEqual(resposta.data['count'], 2)
+        invalido = self.client.get(url, {'precisa_revisao': 'sim'})
+        self.assertEqual(invalido.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_rotas_de_token_retornam_o_mesmo_token(self):
+        credenciais = {'username': 'fase3_token', 'password': 'senha_de_teste_123'}
+        get_user_model().objects.create_user(**credenciais)
+        nova = self.client.post(reverse('auth-token'), credenciais, format='json')
+        legada = self.client.post(reverse('api-token'), credenciais, format='json')
+        self.assertEqual(nova.status_code, status.HTTP_200_OK)
+        self.assertEqual(legada.status_code, status.HTTP_200_OK)
+        self.assertEqual(nova.data['token'], legada.data['token'])
