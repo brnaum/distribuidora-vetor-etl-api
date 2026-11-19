@@ -1,0 +1,29 @@
+<section id="relatorios" hidden aria-labelledby="relatorios-title">
+  <header class="section-header">
+    <h1 id="relatorios-title" tabindex="-1">Relatórios</h1>
+    <button id="refresh-reports" type="button">Atualizar</button>
+  </header>
+  <p id="reports-status" role="status"></p>
+  <div id="reports-content" hidden>
+    <section class="panel" aria-labelledby="neighborhoods-title">
+      <header class="table-status"><h2 id="neighborhoods-title">Clientes por bairro</h2></header>
+      <div class="table-scroll" role="region" aria-labelledby="neighborhoods-title" tabindex="0">
+        <table>
+          <thead><tr><th scope="col">Bairro</th><th scope="col">Clientes</th></tr></thead>
+          <tbody id="neighborhood-rows"></tbody>
+          <tfoot><tr><th scope="row">Total</th><td id="neighborhood-total"></td></tr></tfoot>
+        </table>
+      </div>
+    </section>
+    <section class="panel" aria-labelledby="review-title">
+      <header class="table-status"><h2 id="review-title">Clientes que precisam de revisão</h2></header>
+      <p id="review-status" class="table-status" role="status"></p>
+      <div id="review-table" class="table-scroll" role="region" aria-labelledby="review-title" tabindex="0" hidden>
+        <table>
+          <thead><tr><th scope="col">Identificador</th><th scope="col">Razão social</th><th scope="col">Bairro</th><th scope="col">Cidade</th><th scope="col">UF</th><th scope="col">Ações</th></tr></thead>
+          <tbody id="review-rows"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</section>

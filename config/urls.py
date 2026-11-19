@@ -47,4 +47,5 @@ urlpatterns = [
     ),
 
     path('api/', include('distribuidora.urls')),
+    path('', include('distribuidora.frontend_urls')),
 ]

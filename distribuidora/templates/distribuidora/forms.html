@@ -1,0 +1,23 @@
+<template id="client-form-template">
+  <form class="editor">
+    <label>Identificador do cliente *<input name="id_cliente" maxlength="20" required></label>
+    <label>Razão social *<input name="razao_social" maxlength="200" required></label>
+    <label>Vendedor responsável *<select name="vendedor_responsavel" required></select></label>
+    <label>Bairro<input name="bairro" maxlength="100"></label>
+    <label>Cidade *<input name="cidade" maxlength="100" required></label>
+    <label>UF *<input name="uf" minlength="2" maxlength="2" required></label>
+    <label>CEP<input name="cep" maxlength="10" inputmode="numeric"></label>
+    <label>Data de cadastro<input name="data_cadastro" type="date"></label>
+    <label>CNPJ<input name="cnpj" maxlength="18"></label>
+    <label>Telefone<input name="telefone" type="tel" maxlength="20"></label>
+    <label>E-mail<input name="email" type="email" maxlength="254"></label>
+    <p class="full">* Campos obrigatórios indicados junto ao rótulo.</p>
+    <div class="full"><button class="primary" type="submit">Salvar cliente</button></div>
+  </form>
+</template>
+<template id="seller-form-template">
+  <form class="editor">
+    <label class="full">Nome *<input name="nome" maxlength="100" required></label>
+    <div class="full"><button class="primary" type="submit">Salvar vendedor</button></div>
+  </form>
+</template>
